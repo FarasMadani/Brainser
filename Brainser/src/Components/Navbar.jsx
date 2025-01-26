@@ -1,9 +1,10 @@
 import React from "react";
+import Profileimg from "../assets/profile.webp";
 
 const Navbar = () => {
   return (
     <>
-      <div className="navbar bg-base-10 ">
+      <div className="navbar bg-base-100 text-primary-content shadow-xl rounded-lg">
   <div className="flex-1">
     <a className="btn btn-ghost text-xl">Brainser</a>
   </div>
@@ -13,7 +14,7 @@ const Navbar = () => {
         <div className="w-10 rounded-full">
           <img
             alt="Tailwind CSS Navbar component"
-            src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
+            src={Profileimg} />
         </div>
       </div>
       <ul

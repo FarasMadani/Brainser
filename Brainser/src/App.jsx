@@ -136,115 +136,130 @@ function App() {
   };
 
   return (
-    <div className="m-2 p-2">
-      <Navbar />
-      <div className="LangSelector text-center my-10 space-x-3">
-        <button className="btn btn-primary" onClick={() => setShowModal(true)}>
-          Upload Text
-        </button>
-        <select
-          className="select select-secondary"
-          value={language}
-          onChange={(e) => setLanguage(e.target.value)}
-        >
-          <option disabled value="1">
-            Pick A language
-          </option>
-          <option value="en">English</option>
-          <option value="ar">Arabic</option>
-          {/* Add more language options here if needed */}
-        </select>
+    <div className="mockup-browser bg-base-300 border min-h-screen flex flex-col">
+      <div className="mockup-browser-toolbar">
+        <div className="input">https://Barinser.com</div>
       </div>
+      <div className="bg-base-200 flex-grow flex justify-center items-center px-4 py-16">
+        <div className="my-5 p-20 shadow-2xl shadow-zinc-500 rounded-lg">
+          <Navbar />
+          <div className="LangSelector text-center my-10 space-x-3">
+            <button
+              className="btn btn-primary"
+              onClick={() => setShowModal(true)}
+            >
+              Upload
+            </button>
+            <select
+              className="select select-secondary"
+              value={language}
+              onChange={(e) => setLanguage(e.target.value)}
+            >
+              <option disabled value="1">
+                Pick A language
+              </option>
+              <option value="en">English</option>
+              <option value="ar">Arabic</option>
+              {/* Add more language options here if needed */}
+            </select>
+          </div>
 
-      <div>
-        {uploadedImage && (
-          <p>
-            Extracted Text: <pre>{extractedText}</pre>
-          </p>
-        )}
-      </div>
+          <div>
+            {uploadedImage && (
+              <p>
+                Extracted Text: <pre>{extractedText}</pre>
+              </p>
+            )}
+          </div>
 
-      {showModal && (
-        <div className="modal modal-open">
-          <div className="modal-box">
-            <h3 className="font-bold text-lg">Select File Type</h3>
-            <div className="modal-action">
-              <label className="btn" htmlFor="image-upload">
-                Image
-                <input
-                  id="image-upload"
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => {
-                    handleImageUpload(e);
-                    setShowModal(false);
-                    setShowTextInput(false); // Hide text input
-                  }}
-                  className="hidden"
-                />
-              </label>
-              <label className="btn" htmlFor="pdf-upload">
-                PDF
-                <input
-                  id="pdf-upload"
-                  type="file"
-                  accept="application/pdf"
-                  onChange={(e) => {
-                    handlePDFUpload(e);
-                    setShowModal(false);
-                    setShowTextInput(false); // Hide text input
-                  }}
-                  className="hidden"
-                />
-              </label>
-              <button
-                className="btn"
-                onClick={() => {
-                  setShowTextInput(true); // Show text input
-                  setShowModal(false);
-                }}
-              >
-                Text Input
-              </button>
-              <button className="btn" onClick={() => setShowModal(false)}>
-                Cancel
-              </button>
+          {showModal && (
+            <div className="modal modal-open">
+              <div className="modal-box">
+                <h3 className="font-bold text-lg">Select File Type</h3>
+                <div className="modal-action">
+                  <label className="btn" htmlFor="image-upload">
+                    Image
+                    <input
+                      id="image-upload"
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        handleImageUpload(e);
+                        setShowModal(false);
+                        setShowTextInput(false); // Hide text input
+                      }}
+                      className="hidden"
+                    />
+                  </label>
+                  <label className="btn" htmlFor="pdf-upload">
+                    PDF
+                    <input
+                      id="pdf-upload"
+                      type="file"
+                      accept="application/pdf"
+                      onChange={(e) => {
+                        handlePDFUpload(e);
+                        setShowModal(false);
+                        setShowTextInput(false); // Hide text input
+                      }}
+                      className="hidden"
+                    />
+                  </label>
+                  <button
+                    className="btn"
+                    onClick={() => {
+                      setShowTextInput(true); // Show text input
+                      setShowModal(false);
+                    }}
+                  >
+                    Text Input
+                  </button>
+                  <button className="btn" onClick={() => setShowModal(false)}>
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {showTextInput && (
+            <div className="my-3 py-3 mx-5 px-5">
+              <textarea
+                className="textarea textarea-bordered w-full"
+                placeholder="Type or paste text here..."
+                rows="4"
+                value={providedText}
+                onChange={(e) => setProvidedText(e.target.value.toLowerCase())}
+              />
+            </div>
+          )}
+
+          <div className="flex flex-col items-center">
+            <div className="btn btn-outline mb-5">
+              {!isListening ? (
+                <button onClick={startSpeechRecognition}>
+                  Start Listening
+                </button>
+              ) : (
+                <button onClick={stopSpeechRecognition}>Stop Listening</button>
+              )}
+            </div>
+
+            <div className="stats stats-vertical lg:stats-vertical shadow-lg">
+              <div className="stat">
+                <div className="stat-title">Spoken Words:</div>
+                <div className="stat-value text-lg">{spokenText}</div>
+              </div>
+
+              <div className="stat">
+                <div className="stat-title">Highlighted Mistakes:</div>
+                <div className="stat-value">
+                  {getHighlightedText(providedText, errors)}
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      )}
-
-      {showTextInput && (
-        <div>
-          <textarea
-            className="textarea textarea-bordered w-full"
-            placeholder="Type or paste text here..."
-            rows="4"
-            value={providedText}
-            onChange={(e) => setProvidedText(e.target.value.toLowerCase())}
-          />
-        </div>
-      )}
-
-      <div className="btn btn-outline">
-        {!isListening ? (
-          <button onClick={startSpeechRecognition}>Start Listening</button>
-        ) : (
-          <button onClick={stopSpeechRecognition}>Stop Listening</button>
-        )}
-      </div>
-
-      <div className="stats stats-vertical lg:stats-horizontal shadow">
-        <div className="stat">
-          <div className="stat-title">Spoken Words:</div>
-          <div className="stat-value">{spokenText}</div>
-        </div>
-
-        <div className="stat">
-          <div className="stat-title">Highlighted Mistakes:</div>
-          <div className="stat-value">{getHighlightedText(providedText, errors)}</div>
-        </div>
-
       </div>
     </div>
   );
