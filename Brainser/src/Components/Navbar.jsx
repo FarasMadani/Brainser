@@ -4,7 +4,7 @@ import Profileimg from "../assets/profile.webp";
 const Navbar = () => {
   return (
     <>
-      <div className="navbar bg-base-100 text-primary-content shadow-xl rounded-lg">
+      <div className="navbar bg-base-100 shadow-lg">
   <div className="flex-1">
     <a className="btn btn-ghost text-xl">Brainser</a>
   </div>

@@ -1,6 +1,8 @@
 import React, { useState, useRef } from "react";
 import Tesseract from "tesseract.js";
-import Navbar from "./Components/Navbar";
+import SideNavbar from "./Components/SideNavbar";
+import BottomNavbar from "./Components/BottomNav";
+import "./App.css";
 
 function App() {
   const [uploadedImage, setUploadedImage] = useState(null);
@@ -10,8 +12,6 @@ function App() {
   const [errors, setErrors] = useState([]);
   const [isListening, setIsListening] = useState(false);
   const [language, setLanguage] = useState("1"); // Default value is "1"
-  const [showModal, setShowModal] = useState(false);
-  const [showTextInput, setShowTextInput] = useState(false); // Control visibility of text input
   const recognitionRef = useRef(null); // Store the recognition instance
 
   const languageOptions = {
@@ -136,20 +136,16 @@ function App() {
   };
 
   return (
-    <div className="mockup-browser bg-base-300 border min-h-screen flex flex-col">
-      <div className="mockup-browser-toolbar">
-        <div className="input">https://Barinser.com</div>
-      </div>
-      <div className="bg-base-200 flex-grow flex justify-center items-center px-4 py-16">
-        <div className="my-5 p-20 shadow-2xl shadow-zinc-500 rounded-lg">
-          <Navbar />
+    <>
+    <div className="absolute inset-0 -z-10 h-full w-full bg-white bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px]">
+      <div className="flex justify-center items-start mt-10">
+        <SideNavbar
+          handleImageUpload={handleImageUpload}
+          handlePDFUpload={handlePDFUpload}
+        />
+        <BottomNavbar />
+        <div className="App card bg-base-100 w-full md:w-96 mx-5 p-5 shadow-lg">
           <div className="LangSelector text-center my-10 space-x-3">
-            <button
-              className="btn btn-primary"
-              onClick={() => setShowModal(true)}
-            >
-              Upload
-            </button>
             <select
               className="select select-secondary"
               value={language}
@@ -172,67 +168,15 @@ function App() {
             )}
           </div>
 
-          {showModal && (
-            <div className="modal modal-open">
-              <div className="modal-box">
-                <h3 className="font-bold text-lg">Select File Type</h3>
-                <div className="modal-action">
-                  <label className="btn" htmlFor="image-upload">
-                    Image
-                    <input
-                      id="image-upload"
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => {
-                        handleImageUpload(e);
-                        setShowModal(false);
-                        setShowTextInput(false); // Hide text input
-                      }}
-                      className="hidden"
-                    />
-                  </label>
-                  <label className="btn" htmlFor="pdf-upload">
-                    PDF
-                    <input
-                      id="pdf-upload"
-                      type="file"
-                      accept="application/pdf"
-                      onChange={(e) => {
-                        handlePDFUpload(e);
-                        setShowModal(false);
-                        setShowTextInput(false); // Hide text input
-                      }}
-                      className="hidden"
-                    />
-                  </label>
-                  <button
-                    className="btn"
-                    onClick={() => {
-                      setShowTextInput(true); // Show text input
-                      setShowModal(false);
-                    }}
-                  >
-                    Text Input
-                  </button>
-                  <button className="btn" onClick={() => setShowModal(false)}>
-                    Cancel
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {showTextInput && (
-            <div className="my-3 py-3 mx-5 px-5">
-              <textarea
-                className="textarea textarea-bordered w-full"
-                placeholder="Type or paste text here..."
-                rows="4"
-                value={providedText}
-                onChange={(e) => setProvidedText(e.target.value.toLowerCase())}
-              />
-            </div>
-          )}
+          <div className="my-3 py-3 mx-5 px-5">
+            <textarea
+              className="textarea textarea-bordered w-full"
+              placeholder="Type or paste text here..."
+              rows="4"
+              value={providedText}
+              onChange={(e) => setProvidedText(e.target.value.toLowerCase())}
+            />
+          </div>
 
           <div className="flex flex-col items-center">
             <div className="btn btn-outline mb-5">
@@ -262,6 +206,7 @@ function App() {
         </div>
       </div>
     </div>
+    </>
   );
 }
 
