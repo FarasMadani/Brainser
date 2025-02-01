@@ -11,7 +11,9 @@ function App() {
   const [spokenText, setSpokenText] = useState("");
   const [errors, setErrors] = useState([]);
   const [isListening, setIsListening] = useState(false);
+  const [showResults, setShowResults] = useState(false); // New state to track if results should be shown
   const [language, setLanguage] = useState("1"); // Default value is "1"
+  const [errorMessage, setErrorMessage] = useState(""); // New state for error message
   const recognitionRef = useRef(null); // Store the recognition instance
 
   const languageOptions = {
@@ -42,11 +44,17 @@ function App() {
 
   // Handle text input
   const handleTextInput = (event) => {
-    setExtractedText(event.target.value.toLowerCase());
+    setProvidedText(event.target.value.toLowerCase());
+    setErrorMessage(""); // Clear error message when typing
   };
 
   // Handle speech recognition
   const startSpeechRecognition = () => {
+    if (providedText.trim() === "") {
+      setErrorMessage("Must insert text");
+      return;
+    }
+
     if (
       !("SpeechRecognition" in window || "webkitSpeechRecognition" in window)
     ) {
@@ -95,6 +103,7 @@ function App() {
   // Stop speech recognition
   const stopSpeechRecognition = () => {
     if (recognitionRef.current) {
+      recognitionRef.current.onend = null; // Prevent restarting recognition on end
       recognitionRef.current.stop(); // Manually stop the microphone
       setIsListening(false); // Update listening status
     }
@@ -116,6 +125,7 @@ function App() {
     return mistakes;
   };
 
+
   // Highlight incorrect words
   const getHighlightedText = (text, errors) => {
     const words = text.split(" ");
@@ -123,11 +133,9 @@ function App() {
       return (
         <span
           key={index}
-          style={{
-            backgroundColor: errors.includes(index) ? "red" : "transparent",
-            color: errors.includes(index) ? "white" : "black",
-            padding: "0 2px",
-          }}
+          className={`${
+            errors.includes(index) ? "bg-red-500 text-white" : "bg-transparent"
+          } px-1`}
         >
           {word}
         </span>
@@ -135,77 +143,121 @@ function App() {
     });
   };
 
+  // Handle check result button click
+  const handleCheckResult = () => {
+    if (providedText.trim() === "") {
+      setErrorMessage("Must insert text");
+      return;
+    }
+    setShowResults(true);
+  };
+
+  // Handle go back button click
+  const handleGoBack = () => {
+    setShowResults(false);
+  };
+
   return (
     <>
-    <div className="absolute inset-0 -z-10 h-full w-full bg-white bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px]">
-      <div className="flex justify-center items-start mt-10">
-        <SideNavbar
-          handleImageUpload={handleImageUpload}
-          handlePDFUpload={handlePDFUpload}
-        />
-        <BottomNavbar />
-        <div className="App card bg-base-100 w-full md:w-96 mx-5 p-5 shadow-lg">
-          <div className="LangSelector text-center my-10 space-x-3">
-            <select
-              className="select select-secondary"
-              value={language}
-              onChange={(e) => setLanguage(e.target.value)}
-            >
-              <option disabled value="1">
-                Pick A language
-              </option>
-              <option value="en">English</option>
-              <option value="ar">Arabic</option>
-              {/* Add more language options here if needed */}
-            </select>
-          </div>
-
-          <div>
-            {uploadedImage && (
-              <p>
-                Extracted Text: <pre>{extractedText}</pre>
-              </p>
+      <div className="absolute inset-0 -z-10 h-full w-full bg-white bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px]">
+        <div className="flex justify-center items-start mt-10">
+          <SideNavbar
+            handleImageUpload={handleImageUpload}
+            handlePDFUpload={handlePDFUpload}
+          />
+          <div className="App card bg-base-100 w-full md:w-96 mx-5 p-5 shadow-lg">
+            {!showResults && (
+              <div className="LangSelector text-center my-3 space-x-3">
+                <select
+                  className="select select-secondary"
+                  value={language}
+                  onChange={(e) => setLanguage(e.target.value)}
+                >
+                  <option disabled value="1">
+                    Pick A language
+                  </option>
+                  <option value="en">English</option>
+                  <option value="ar">Arabic</option>
+                  {/* Add more language options here if needed */}
+                </select>
+              </div>
             )}
-          </div>
 
-          <div className="my-3 py-3 mx-5 px-5">
-            <textarea
-              className="textarea textarea-bordered w-full"
-              placeholder="Type or paste text here..."
-              rows="4"
-              value={providedText}
-              onChange={(e) => setProvidedText(e.target.value.toLowerCase())}
-            />
-          </div>
-
-          <div className="flex flex-col items-center">
-            <div className="btn btn-outline mb-5">
-              {!isListening ? (
-                <button onClick={startSpeechRecognition}>
-                  Start Listening
-                </button>
-              ) : (
-                <button onClick={stopSpeechRecognition}>Stop Listening</button>
+            <div>
+              {uploadedImage && (
+                <p>
+                  Extracted Text: <pre>{extractedText}</pre>
+                </p>
               )}
             </div>
 
-            <div className="stats stats-vertical lg:stats-vertical shadow-lg">
-              <div className="stat">
-                <div className="stat-title">Spoken Words:</div>
-                <div className="stat-value text-lg">{spokenText}</div>
+            {!isListening && !showResults && (
+              <div className="my-3 py-3">
+                <textarea
+                  className="textarea textarea-bordered w-full text-sm"
+                  placeholder="Type or paste text here..."
+                  rows="4"
+                  value={providedText}
+                  onChange={handleTextInput}
+                />
+                {errorMessage && (
+                  <p className="text-red-500 mt-2">{errorMessage}</p>
+                )}
               </div>
+            )}
 
-              <div className="stat">
-                <div className="stat-title">Highlighted Mistakes:</div>
-                <div className="stat-value">
-                  {getHighlightedText(providedText, errors)}
+            <div className="flex flex-col items-center">
+              {!showResults && (
+                <div className="btn btn-outline mb-5">
+                  {!isListening ? (
+                    <button onClick={startSpeechRecognition}>
+                      Start Listening
+                    </button>
+                  ) : (
+                    <button onClick={stopSpeechRecognition}>Stop Listening</button>
+                  )}
                 </div>
-              </div>
+              )}
+
+              {!isListening && !showResults && (
+                <button
+                  className="btn btn-outline"
+                  onClick={handleCheckResult}
+                >
+                  Check Result
+                </button>
+              )}
+
+              {showResults && (
+                <>
+                  <div className="stats-vertical">
+                    <div className="stat">
+                      <div className="stat-title text-center">Spoken Words</div>
+                      <div className="stat-value text-sm flex flex-wrap overflow-y-auto whitespace-normal max-h-48">
+                        {spokenText}
+                      </div>
+                    </div>
+
+                    <div className="stat">
+                      <div className="stat-title text-center">Highlighted Mistakes</div>
+                      <div className="stat-value text-sm flex flex-wrap overflow-y-auto whitespace-normal max-h-48">
+                        {getHighlightedText(providedText, errors)}
+                      </div>
+                    </div>
+                  </div>
+                  <button
+                    className="btn btn-secondary mt-5"
+                    onClick={handleGoBack}
+                  >
+                    Go Back
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>
+        {!showResults && <BottomNavbar/>}
       </div>
-    </div>
     </>
   );
 }
