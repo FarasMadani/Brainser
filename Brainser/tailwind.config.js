@@ -7,6 +7,6 @@ export default {
   ],
   plugins: [daisyui, require("tailwindcss-animate")],
   daisyui: {
-    themes: ["wireframe"],
+    themes: ["Light"],
   }
 }

@@ -24,7 +24,7 @@ const BottomNav = () => {
   }
 
   return (
-    <div className="navbar fixed bottom-0 left-0 right-0 flex justify-around items-center bg-white shadow-xl max-w-md mx-auto rounded-xl">
+    <div className="BottomNavbar navbar fixed bottom-0 left-0 right-0 flex justify-around items-center bg-white shadow-xl max-w-md mx-auto rounded-xl">
       <button className="flex flex-col items-center space-y-1 text-gray-600">
         <svg
           xmlns="http://www.w3.org/2000/svg"
