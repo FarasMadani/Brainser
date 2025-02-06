@@ -2,10 +2,7 @@ import React from "react";
 
 const Hero = () => {
   return (
-    <div className="hero min-h-screen bg-base-200">
-    <header class="relative py-4 md:py-6">
-    </header>
-
+    <div className="hero min-h-screen bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px]">
     <section class="relative py-12 sm:py-16 lg:pt-20 lg:pb-36">
         <div class="px-4 mx-auto sm:px-6 lg:px-8 max-w-7xl">
             <div class="grid grid-cols-1 gap-y-8 lg:items-center lg:grid-cols-2 sm:gap-y-20 xl:grid-cols-5">
@@ -26,7 +23,7 @@ const Hero = () => {
                         </a>
 
                         <a
-                            href="#"
+                            href=""
                             title=""
                             class="inline-flex items-center px-4 py-4 mt-4 text-lg font-bold transition-all duration-200 bg-transparent border border-transparent sm:mt-0 font-pj justif-center rounded-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 hover:bg-gray-200 focus:bg-gray-200"
                             role="button"

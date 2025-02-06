@@ -1,8 +1,0 @@
-    .BottomNavbar{
-        justify-content: space-around;
-        align-items: center;
-        position: fixed;
-        bottom: 25px;
-        width: 80%;
-        box-shadow: black 0px 0px 3px;
-    }

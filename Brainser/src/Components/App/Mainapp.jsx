@@ -2,7 +2,8 @@ import React, { useState, useRef } from "react";
 import Tesseract from "tesseract.js";
 import SideNavbar from "./SideNavbar";
 import BottomNavbar from "./BottomNav";
-import "./Mainapp.css";
+import Background from "./Background"
+
 
 function MainApp() {
   const [uploadedImage, setUploadedImage] = useState(null);
@@ -134,7 +135,7 @@ function MainApp() {
         <span
           key={index}
           className={`${
-            errors.includes(index) ? "bg-red-500 text-white" : "bg-transparent"
+            errors.includes(index) ? "bg-red-500 rounded-md text-white" : "bg-transparent"
           } px-1`}
         >
           {word}
@@ -159,13 +160,13 @@ function MainApp() {
 
   return (
     <>
-      <div className="absolute inset-0 -z-10 h-full w-full bg-white bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px]">
+    <Background />
         <div className="flex justify-center items-start mt-10">
           <SideNavbar
             handleImageUpload={handleImageUpload}
             handlePDFUpload={handlePDFUpload}
           />
-          <div className="App card bg-base-100 w-full md:w-96 mx-5 p-5 shadow-lg">
+          <div className="App card bg-white w-96 mx-2 p-5 shadow-lg border-4 border-gray-400">
             {!showResults && (
               <div className="LangSelector text-center my-3 space-x-3">
                 <select
@@ -184,9 +185,9 @@ function MainApp() {
             )}
 
             <div>
-              {uploadedImage && (
+              {uploadedImage &&(
                 <p>
-                  Extracted Text: <pre>{extractedText}</pre>
+                Text: <pre className="stat-value text-sm flex flex-wrap overflow-y-auto whitespace-normal max-h-24">{extractedText}</pre>
                 </p>
               )}
             </div>
@@ -230,12 +231,14 @@ function MainApp() {
 
               {showResults && (
                 <>
+                <div className="mx">
                   <div className="stats-vertical">
                     <div className="stat">
-                      <div className="stat-title text-center">Spoken Words</div>
+                      <div className="stat-title text-center mx-0">Spoken Words</div>
                       <div className="stat-value text-sm flex flex-wrap overflow-y-auto whitespace-normal max-h-48">
                         {spokenText}
                       </div>
+                    </div>
                     </div>
 
                     <div className="stat">
@@ -245,6 +248,7 @@ function MainApp() {
                       </div>
                     </div>
                   </div>
+                  
                   <button
                     className="btn btn-secondary mt-5"
                     onClick={handleGoBack}
@@ -257,7 +261,6 @@ function MainApp() {
           </div>
         </div>
         {!showResults && <BottomNavbar/>}
-      </div>
     </>
   );
 }

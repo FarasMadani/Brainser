@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import "./BottomNav.css"
 
 const BottomNav = () => {
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
@@ -24,7 +23,7 @@ const BottomNav = () => {
   }
 
   return (
-    <div className="BottomNavbar navbar fixed bottom-0 left-0 right-0 flex justify-around items-center bg-white shadow-xl max-w-md mx-auto rounded-xl">
+    <div className="navbar fixed bottom-8 left-0 right-0 just-center justify-around items-center border-4 border-gray-400 bg-white shadow-xl max-w-md mx-auto rounded-xl max-sm:max-w-80">
       <button className="flex flex-col items-center space-y-1 text-gray-600">
         <svg
           xmlns="http://www.w3.org/2000/svg"
