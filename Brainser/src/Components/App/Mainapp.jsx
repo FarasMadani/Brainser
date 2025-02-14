@@ -5,6 +5,8 @@ import BottomNavbar from "./BottomNav";
 import Background from "./Background";
 import Navbar from "../Home/Navbar";
 import MicrophoneVisualizer from "../App/Conditions/MicroVis"; // Import the new component
+import { PDFDocument } from "pdf-lib";
+import * as pdfjsLib from "pdfjs-dist";
 
 function MainApp() {
   const [uploadedImage, setUploadedImage] = useState(null);
@@ -46,9 +48,27 @@ function MainApp() {
   };
 
   // Handle PDF upload
-  const handlePDFUpload = (event) => {
+  const handlePDFUpload = async (event) => {
     const file = event.target.files[0];
-    // Add logic to handle PDF upload and text extraction
+    const reader = new FileReader();
+
+    reader.onload = async (e) => {
+      const typedArray = new Uint8Array(e.target.result);
+      const pdfDoc = await PDFDocument.load(typedArray);
+      const numPages = pdfDoc.getPageCount();
+      let extractedText = "";
+
+      for (let i = 0; i < numPages; i++) {
+        const page = await pdfDoc.getPage(i);
+        const textContent = await page.getTextContent();
+        const pageText = textContent.items.map((item) => item.str).join(" ");
+        extractedText += pageText + " ";
+      }
+
+      setExtractedText(extractedText.toLowerCase());
+    };
+
+    reader.readAsArrayBuffer(file);
   };
 
   // Handle text input

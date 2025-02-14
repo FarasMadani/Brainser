@@ -56,7 +56,7 @@ const Navbar = () => {
       <div className="navbar-start">
           <>
             <img src={Logo} alt="Brainser-Logo" className="h-12 mr-2" />
-            <div className="text-2xl font-bold">Brainser</div>
+            <div className="text-2xl font-semibold">Brainser</div>
           </>
       </div>
       <div className="navbar-end flex items-center relative">
@@ -76,19 +76,17 @@ const Navbar = () => {
               {user.displayName}
             </div>
             {dropdownVisible && (
-              <div className="absolute right-0 mt-20 w-48 bg-white border rounded shadow-lg">
                 <button
-                  className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
+                  className="btn hover:bg-black"
                   onClick={handleLogout}
                 >
                   Logout
                 </button>
-              </div>
             )}
           </>
         ) : (
           <button
-            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            className="btn  black px-4 py-2 rounded hover:bg-black hover:text-white"
             onClick={handleTryForFreeClick}
           >
             Try For Free
