@@ -1,9 +1,10 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Tesseract from "tesseract.js";
 import SideNavbar from "./SideNavbar";
 import BottomNavbar from "./BottomNav";
-import Background from "./Background"
-
+import Background from "./Background";
+import Navbar from "../Home/Navbar";
+import MicrophoneVisualizer from "../App/Conditions/MicroVis"; // Import the new component
 
 function MainApp() {
   const [uploadedImage, setUploadedImage] = useState(null);
@@ -16,6 +17,13 @@ function MainApp() {
   const [language, setLanguage] = useState("1"); // Default value is "1"
   const [errorMessage, setErrorMessage] = useState(""); // New state for error message
   const recognitionRef = useRef(null); // Store the recognition instance
+  const [history, setHistory] = useState([]);
+  const [showHistory, setShowHistory] = useState(false); // New state to track history pop-up
+
+  useEffect(() => {
+    const savedHistory = JSON.parse(localStorage.getItem("history")) || [];
+    setHistory(savedHistory);
+  }, []);
 
   const languageOptions = {
     en: { ocr: "eng", speech: "en-US" },
@@ -46,14 +54,15 @@ function MainApp() {
   // Handle text input
   const handleTextInput = (event) => {
     setProvidedText(event.target.value.toLowerCase());
+    const sanitizedText = event.target.value.replace(/[^a-zA-Z0-9\s.,]/g, "");
+    setProvidedText(sanitizedText.toLowerCase());
     setErrorMessage(""); // Clear error message when typing
-  };
+    };
 
   // Handle speech recognition
   const startSpeechRecognition = () => {
     if (providedText.trim() === "") {
-      setErrorMessage("Must insert text");
-      return;
+      return setErrorMessage("Select A Language To Continue");
     }
 
     if (
@@ -126,7 +135,6 @@ function MainApp() {
     return mistakes;
   };
 
-
   // Highlight incorrect words
   const getHighlightedText = (text, errors) => {
     const words = text.split(" ");
@@ -135,13 +143,21 @@ function MainApp() {
         <span
           key={index}
           className={`${
-            errors.includes(index) ? "bg-red-500 rounded-md text-white" : "bg-transparent"
+            errors.includes(index)
+              ? "bg-red-500 rounded-md text-white"
+              : "bg-transparent"
           } px-1`}
         >
           {word}
         </span>
       );
     });
+  };
+
+  const saveResultToHistory = (result) => {
+    const updatedHistory = [...history, result];
+    setHistory(updatedHistory);
+    localStorage.setItem("history", JSON.stringify(updatedHistory));
   };
 
   // Handle check result button click
@@ -151,6 +167,7 @@ function MainApp() {
       return;
     }
     setShowResults(true);
+    saveResultToHistory({ providedText, spokenText, errors });
   };
 
   // Handle go back button click
@@ -160,107 +177,115 @@ function MainApp() {
 
   return (
     <>
-    <Background />
-        <div className="flex justify-center items-start mt-10">
-          <SideNavbar
-            handleImageUpload={handleImageUpload}
-            handlePDFUpload={handlePDFUpload}
-          />
-          <div className="App card bg-white w-96 mx-2 p-5 shadow-lg border-4 border-gray-400">
-            {!showResults && (
-              <div className="LangSelector text-center my-3 space-x-3">
-                <select
-                  className="select select-secondary"
-                  value={language}
-                  onChange={(e) => setLanguage(e.target.value)}
-                >
-                  <option disabled value="1">
-                    Pick A language
-                  </option>
-                  <option value="en">English</option>
-                  <option value="ar">Arabic</option>
-                  {/* Add more language options here if needed */}
-                </select>
-              </div>
-            )}
+      <Navbar />
+      <Background />
+      <div className="flex justify-center items-start mt-10">
+        <SideNavbar
+          handleImageUpload={handleImageUpload}
+          handlePDFUpload={handlePDFUpload}
+        />
+        <div className="App card bg-white w-96 mx-2 p-5 shadow-lg border-4 border-gray-400">
+          {!showResults && (
+            <div className="LangSelector text-center my-3 space-x-3">
+              <select
+                className="select select-secondary"
+                value={language}
+                onChange={(e) => setLanguage(e.target.value)}
+              >
+                <option disabled value="1">
+                  Pick A language
+                </option>
+                <option value="en">English</option>
+                <option value="ar">Arabic</option>
+                {/* Add more language options here if needed */}
+              </select>
+            </div>
+          )}
 
-            <div>
-              {uploadedImage &&(
-                <p>
-                Text: <pre className="stat-value text-sm flex flex-wrap overflow-y-auto whitespace-normal max-h-24">{extractedText}</pre>
-                </p>
+          <div>
+            {uploadedImage && (
+              <p>
+                Text:{" "}
+                <pre className="stat-value text-sm flex flex-wrap overflow-y-auto whitespace-normal max-h-24">
+                  {extractedText}
+                </pre>
+              </p>
+            )}
+          </div>
+
+          {!isListening && !showResults && (
+            <div className="my-3 py-3">
+              <textarea
+                className="textarea textarea-bordered w-full text-sm"
+                placeholder="Type or paste text here..."
+                rows="4"
+                value={providedText}
+                onChange={handleTextInput}
+              />
+              {errorMessage && (
+                <p className="text-red-500 mt-2">{errorMessage}</p>
               )}
             </div>
+          )}
 
-            {!isListening && !showResults && (
-              <div className="my-3 py-3">
-                <textarea
-                  className="textarea textarea-bordered w-full text-sm"
-                  placeholder="Type or paste text here..."
-                  rows="4"
-                  value={providedText}
-                  onChange={handleTextInput}
-                />
-                {errorMessage && (
-                  <p className="text-red-500 mt-2">{errorMessage}</p>
+          <div className="flex flex-col items-center">
+          {isListening && <MicrophoneVisualizer />} {/* Add the visualizer */}
+            {!showResults && (
+              <div className="btn btn-outline mt-3 mb-3 ">
+                {!isListening ? (
+                  <button onClick={startSpeechRecognition}>
+                    Start Listening
+                  </button>
+                ) : (
+                  <button onClick={stopSpeechRecognition}>
+                    Stop Listening
+                  </button>
                 )}
               </div>
             )}
 
-            <div className="flex flex-col items-center">
-              {!showResults && (
-                <div className="btn btn-outline mb-5">
-                  {!isListening ? (
-                    <button onClick={startSpeechRecognition}>
-                      Start Listening
-                    </button>
-                  ) : (
-                    <button onClick={stopSpeechRecognition}>Stop Listening</button>
-                  )}
-                </div>
-              )}
+            {!isListening && !showResults && (
+              <button className="btn btn-outline" onClick={handleCheckResult}>
+                Check Result
+              </button>
+            )}
 
-              {!isListening && !showResults && (
-                <button
-                  className="btn btn-outline"
-                  onClick={handleCheckResult}
-                >
-                  Check Result
-                </button>
-              )}
-
-              {showResults && (
-                <>
+            {showResults && (
+              <>
                 <div className="mx">
                   <div className="stats-vertical">
                     <div className="stat">
-                      <div className="stat-title text-center mx-0">Spoken Words</div>
+                      <div className="stat-title text-center text-lg m-2 underline bg-gray-400 rounded-lg">
+                        Spoken Words
+                      </div>
                       <div className="stat-value text-sm flex flex-wrap overflow-y-auto whitespace-normal max-h-48">
                         {spokenText}
                       </div>
                     </div>
-                    </div>
+                  </div>
 
-                    <div className="stat">
-                      <div className="stat-title text-center">Highlighted Mistakes</div>
-                      <div className="stat-value text-sm flex flex-wrap overflow-y-auto whitespace-normal max-h-48">
-                        {getHighlightedText(providedText, errors)}
-                      </div>
+                  <div className="stat">
+                    <div className="stat-title text-center text-lg m-2 underline bg-gray-400 rounded-lg">
+                      Highlighted Mistakes
+                    </div>
+                    <div className="stat-value text-sm flex flex-wrap overflow-y-auto whitespace-normal max-h-48">
+                      {getHighlightedText(providedText, errors)}
                     </div>
                   </div>
-                  
-                  <button
-                    className="btn btn-secondary mt-5"
-                    onClick={handleGoBack}
-                  >
-                    Go Back
-                  </button>
-                </>
-              )}
-            </div>
+                </div>
+
+                <button
+                  className="btn btn-secondary mt-5"
+                  onClick={handleGoBack}
+                >
+                  Go Back
+                </button>
+              </>
+            )}
           </div>
         </div>
-        {!showResults && <BottomNavbar/>}
+      </div>
+     <BottomNavbar history={history} showHistory={showHistory} setShowHistory={setShowHistory} />
     </>
   );
 }
