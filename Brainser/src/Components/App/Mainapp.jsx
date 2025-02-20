@@ -5,7 +5,6 @@ import BottomNavbar from "./BottomNav";
 import Background from "./Background";
 import Navbar from "../Home/Navbar";
 import MicrophoneVisualizer from "../App/Conditions/MicroVis"; // Import the new component
-import { PDFDocument } from "pdf-lib";
 import * as pdfjsLib from "pdfjs-dist";
 
 function MainApp() {
@@ -52,20 +51,20 @@ function MainApp() {
     const file = event.target.files[0];
     const reader = new FileReader();
 
-    reader.onload = async (e) => {
-      const typedArray = new Uint8Array(e.target.result);
-      const pdfDoc = await PDFDocument.load(typedArray);
-      const numPages = pdfDoc.getPageCount();
-      let extractedText = "";
+    reader.onload = async function () {
+      const typedArray = new Uint8Array(this.result);
+      const pdf = await pdfjsLib.getDocument(typedArray).promise;
+      let textContent = "";
 
-      for (let i = 0; i < numPages; i++) {
-        const page = await pdfDoc.getPage(i);
-        const textContent = await page.getTextContent();
-        const pageText = textContent.items.map((item) => item.str).join(" ");
-        extractedText += pageText + " ";
+      for (let i = 1; i <= pdf.numPages; i++) {
+        const page = await pdf.getPage(i);
+        const text = await page.getTextContent();
+        text.items.forEach((item) => {
+          textContent += item.str + " ";
+        });
       }
 
-      setExtractedText(extractedText.toLowerCase());
+      setExtractedText(textContent.toLowerCase());
     };
 
     reader.readAsArrayBuffer(file);
@@ -73,11 +72,11 @@ function MainApp() {
 
   // Handle text input
   const handleTextInput = (event) => {
-    setProvidedText(event.target.value.toLowerCase());
-    const sanitizedText = event.target.value.replace(/[^a-zA-Z0-9\s.,]/g, "");
+    const inputText = event.target.value;
+    const sanitizedText = inputText.replace(/[^a-zA-Z0-9\s.,\u0600-\u06FF]/g, "").trim(); // Allow Arabic characters
     setProvidedText(sanitizedText.toLowerCase());
     setErrorMessage(""); // Clear error message when typing
-    };
+  };
 
   // Handle speech recognition
   const startSpeechRecognition = () => {
@@ -180,6 +179,12 @@ function MainApp() {
     localStorage.setItem("history", JSON.stringify(updatedHistory));
   };
 
+  const removeHistoryItem = (index) => {
+    const updatedHistory = history.filter((_, i) => i !== index);
+    setHistory(updatedHistory);
+    localStorage.setItem("history", JSON.stringify(updatedHistory));
+  };
+
   // Handle check result button click
   const handleCheckResult = () => {
     if (providedText.trim() === "") {
@@ -208,7 +213,7 @@ function MainApp() {
           {!showResults && (
             <div className="LangSelector text-center my-3 space-x-3">
               <select
-                className="select select-secondary"
+                className="select select-primary"
                 value={language}
                 onChange={(e) => setLanguage(e.target.value)}
               >
@@ -305,7 +310,7 @@ function MainApp() {
           </div>
         </div>
       </div>
-     <BottomNavbar history={history} showHistory={showHistory} setShowHistory={setShowHistory} />
+     <BottomNavbar history={history} showHistory={showHistory} setShowHistory={setShowHistory} removeHistoryItem={removeHistoryItem} />
     </>
   );
 }

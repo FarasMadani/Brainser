@@ -1,0 +1,25 @@
+{
+  "navbar": {
+    "home": "الرئيسية",
+    "tools": "الأدوات",
+    "history": "التاريخ",
+    "tryForFree": "جرب مجانا",
+    "logout": "تسجيل خروج",
+    "changeLanguage": "تغيير اللغة"
+  },
+  "home": {
+    "welcome": "مرحبًا بك في Brainser"
+  },
+  "tools": {
+    "title": "الأدوات"
+  },
+  "history": {
+    "title": "التاريخ",
+    "noHistory": "لا يوجد تاريخ متاح",
+    "providedText": "النص المقدم",
+    "spokenText": "النص المنطوق",
+    "errors": "الأخطاء",
+    "remove": "إزالة",
+    "clearAll": "مسح الكل"
+  }
+}

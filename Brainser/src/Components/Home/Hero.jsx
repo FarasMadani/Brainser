@@ -9,7 +9,7 @@ const Hero = () => {
             <div class="grid grid-cols-1 gap-y-8 lg:items-center lg:grid-cols-2 sm:gap-y-20 xl:grid-cols-5">
                 <div class="text-center xl:col-span-2 lg:text-left md:px-16 lg:px-0">
                     <div class="max-w-sm mx-auto sm:max-w-md md:max-w-full">
-                        <h1 class="text-4xl font-bold leading-tight text-gray-900 sm:text-5xl sm:leading-tight lg:text-6xl lg:leading-tight font-pj">Your Parter That Listenes</h1>
+                        <h1 class="text-4xl font-bold leading-tight text-black sm:text-5xl sm:leading-tight lg:text-6xl lg:leading-tight font-pj">Your Parter That Listenes</h1>
                         <p>With Brainser Memorizing Was Never Easy</p>
                     </div>
 
@@ -17,7 +17,7 @@ const Hero = () => {
                         <a
                             href="#"
                             title=""
-                            class="inline-flex items-center px-8 py-4 text-lg font-bold text-white transition-all duration-200 bg-gray-900 border border-transparent rounded-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 font-pj justif-center hover:bg-gray-600"
+                            class="btn btn-lg hover:bg-black hover:text-white"
                             role="button"
                         >
                             How It Works

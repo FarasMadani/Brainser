@@ -69,24 +69,21 @@ const Navbar = () => {
                 className="h-10 w-10 rounded-full mr-2"
               />
             )}
-            <div
-              className="text-xl font-medium mr-4 cursor-pointer"
-              onClick={toggleDropdown}
-            >
-              {user.displayName}
+            <div className="dropdown dropdown-bottom">
+              <label tabIndex={0} className="btn m-1" onClick={toggleDropdown}>
+                {user.displayName}
+              </label>
+              {dropdownVisible && (
+                <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
+                  <li><a onClick={handleLogout}>Logout</a></li>
+                  {/* Add more items as needed */}
+                </ul>
+              )}
             </div>
-            {dropdownVisible && (
-                <button
-                  className="btn hover:bg-black"
-                  onClick={handleLogout}
-                >
-                  Logout
-                </button>
-            )}
           </>
         ) : (
           <button
-            className="btn  black px-4 py-2 rounded hover:bg-black hover:text-white"
+            className="btn black px-4 py-2 rounded hover:bg-black hover:text-white"
             onClick={handleTryForFreeClick}
           >
             Try For Free
