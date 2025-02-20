@@ -73,7 +73,10 @@ function MainApp() {
   // Handle text input
   const handleTextInput = (event) => {
     const inputText = event.target.value;
-    const sanitizedText = inputText.replace(/[^a-zA-Z0-9\s.,\u0600-\u06FF]/g, "").trim(); // Allow Arabic characters
+    const sanitizedText = inputText
+      .replace(/[^a-zA-Z0-9\s.,\u0600-\u06FF]/g, "") // Allow Arabic characters and spaces
+      .replace(/[\u0610-\u061A\u064B-\u065F\u06D6-\u06DC\u06DF-\u06E8\u06EA-\u06ED]/g, "") // Remove Arabic diacritics (harakat)
+      .trim();
     setProvidedText(sanitizedText.toLowerCase());
     setErrorMessage(""); // Clear error message when typing
   };
@@ -166,6 +169,7 @@ function MainApp() {
               ? "bg-red-500 rounded-md text-white"
               : "bg-transparent"
           } px-1`}
+          style={{ direction: language === "ar" ? "rtl" : "ltr", textAlign: language === "ar" ? "right" : "left" }} // Adjust text direction and alignment for Arabic
         >
           {word}
         </span>
